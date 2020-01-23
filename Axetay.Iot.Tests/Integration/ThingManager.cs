@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using Amazon.IoT;
 using Amazon.S3;
 using Axetay.Provision;
@@ -21,9 +22,9 @@ namespace Axetay.Iot.Tests.Integration
         }
 
         [Test]
-        public void Test1()
+        public async Task Test1()
         {
-            _ = _amazonManager.RegisterThing("MyButton", "Zorrar");
+            await _amazonManager.RegisterThing("MyButton", "Zorrar");
 
         }
     }

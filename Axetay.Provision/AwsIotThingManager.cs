@@ -18,6 +18,7 @@ namespace Axetay.Provision
         {
             _client = client;
             _certificateStore = certificateStore;
+          
         }
 
         public async Task RegisterThing(string thingName, string thingType)
@@ -32,8 +33,8 @@ namespace Axetay.Provision
             var certificate = await CreateCertificate();
             await _certificateStore.StoreCertificate(certificate.CertificateId, certificate.CertificatePem);
             await AttachThingToCertificate(createThingResponse.ThingName, certificate.CertificateArn);
-            var policy = await CreatePolicy(thingType);
-            await AttachPolicyToCertificate(policy.PolicyName, certificate.CertificateArn);
+            await CreatePolicy(thingType);
+            await AttachPolicyToCertificate(thingType, certificate.CertificateArn);
         }
 
         private async Task<CreateKeysAndCertificateResponse> CreateCertificate()
@@ -54,15 +55,28 @@ namespace Axetay.Provision
             var result = await _client.AttachThingPrincipalAsync(request);
         }
 
-        private Task<CreatePolicyResponse> CreatePolicy(string policyName)
+        private async Task CreatePolicy(string policyName)
         {
-            var request = new CreatePolicyRequest()
+            var existingPolicy = await _client.GetPolicyAsync(policyName);
+            if (existingPolicy == null)
             {
-                PolicyDocument = LoadPolicy(policyName),
-                PolicyName = policyName
-            };
-            
-            return _client.CreatePolicyAsync(request);
+                var createPolicyRequest = new CreatePolicyRequest()
+                {
+                    PolicyDocument = LoadPolicy(policyName),
+                    PolicyName = policyName
+                };
+                await _client.CreatePolicyAsync(createPolicyRequest);
+            }
+            else
+            {
+                CreatePolicyVersionRequest createPolicyVersionRequest = new CreatePolicyVersionRequest()
+                {
+                    PolicyDocument = LoadPolicy(policyName),
+                    PolicyName = policyName,
+                    SetAsDefault = true
+                };
+                await _client.CreatePolicyVersionAsync(createPolicyVersionRequest);
+            }
         }
 
         private async Task AttachPolicyToCertificate(string policyName, string certificateArn)
@@ -80,7 +94,7 @@ namespace Axetay.Provision
         {
             var policyLocator = $"Axetay.Provision.Policies.{policyName}.json";
             var assembly = Assembly.GetExecutingAssembly();
-            using Stream stream = assembly.GetManifestResourceStream(policyName);
+            using Stream stream = assembly.GetManifestResourceStream(policyLocator);
             using StreamReader reader = new StreamReader(stream ?? throw new InvalidOperationException());
             string result = reader.ReadToEnd();
             return result;

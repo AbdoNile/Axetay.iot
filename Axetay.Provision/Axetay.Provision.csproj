@@ -5,7 +5,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="Policies\policytemplate.json" />
+    <None Remove="Policies\Zorrar.json" />
   </ItemGroup>
 
   <ItemGroup>
@@ -14,9 +14,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Resource Include="Policies\PolicyTemplate.json">
+    <EmbeddedResource Include="Policies\Zorrar.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Resource>
+    </EmbeddedResource>
   </ItemGroup>
 
 </Project>

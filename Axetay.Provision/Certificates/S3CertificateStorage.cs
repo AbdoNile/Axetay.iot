@@ -35,7 +35,7 @@ namespace Axetay.Provision.Certificates
                 Key = certificateId
             };
 
-            var response = await _s3Client.PutObjectAsync(request);
+            var response = await _s3Client.PutObjectAsync(request);           
         }
     }
 }
