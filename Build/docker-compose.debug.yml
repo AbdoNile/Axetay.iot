@@ -1,0 +1,11 @@
+version: '3'
+
+services:
+  amazonfreertos-esp32:
+   entrypoint: 
+     - bash
+     - "-c"
+     - "while true; do sleep 86400; done"
+   volumes: 
+     - ./:/etc/c7n-workspace
+    

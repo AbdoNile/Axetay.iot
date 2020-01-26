@@ -1,7 +1,8 @@
-FROM ubuntu:16.04
+FROM ubuntu:18.04
 
-RUN apt-get update && apt-get upgrade -y && apt-get install -y software-properties-common apt-transport-https ca-certificates gnupg 
-
+RUN apt-get update && apt-get upgrade -y && apt-get install -y software-properties-common apt-transport-https ca-certificates gnupg wget
+RUN wget https://apt.kitware.com/keys/kitware-archive-latest.asc  -O kitware-archive-latest.asc && apt-key add kitware-archive-latest.asc
+RUN ls
 RUN apt-add-repository 'deb https://apt.kitware.com/ubuntu/ bionic main'
 RUN apt-get update &&  \
     apt-get install -y git wget flex bison \
@@ -18,12 +19,12 @@ WORKDIR /esp
 RUN tar -xzf xtensa-esp32-elf-linux64-1.22.0-80-g6c4433a-5.2.0.tar.gz
 ENV PATH="$PATH:$HOME/esp/xtensa-esp32-elf/bin"
 
-
-RUN git clone https://github.com/aws/amazon-freertos.git --recurse-submodules
-WORKDIR amazon-freertos
-
-#ADD "https://www.random.org/cgi-bin/randbyte?nbytes=10&format=h" skipcache
-
+RUN git clone https://github.com/aws/amazon-freertos.git /amazon-freertos --recurse-submodules
+WORKDIR /amazon-freertos
+#RUN mkdir build
 RUN pip install --upgrade pip 
-RUN pip install --user -r vendors/espressif/esp-idf/requirements.txt
-RUN cmake -DVENDOR=espressif -DBOARD=esp32_wrover_kit -DCOMPILER=xtensa-esp32 -S . -B build
+RUN pip install --user -r /amazon-freertos/vendors/espressif/esp-idf/requirements.txt
+RUN cmake -DVENDOR=espressif -DBOARD=esp32_wrover_kit -DCOMPILER=xtensa-esp32 -GNinja -S  . -B /build-output
+WORKDIR /build-output 
+RUN ls
+RUN ninja

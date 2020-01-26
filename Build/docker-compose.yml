@@ -1,0 +1,10 @@
+version: '3'
+
+services:
+  amazonfreertos-esp32:
+    image: axetay-buildroom-amazonfreertos-esp32:0.0.2
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes: 
+        - ./:/build-output
