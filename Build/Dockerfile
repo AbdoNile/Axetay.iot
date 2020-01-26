@@ -20,11 +20,10 @@ RUN tar -xzf xtensa-esp32-elf-linux64-1.22.0-80-g6c4433a-5.2.0.tar.gz
 ENV PATH="$PATH:$HOME/esp/xtensa-esp32-elf/bin"
 
 RUN git clone https://github.com/aws/amazon-freertos.git /amazon-freertos --recurse-submodules
-WORKDIR /amazon-freertos
-#RUN mkdir build
+
 RUN pip install --upgrade pip 
 RUN pip install --user -r /amazon-freertos/vendors/espressif/esp-idf/requirements.txt
-RUN cmake -DVENDOR=espressif -DBOARD=esp32_wrover_kit -DCOMPILER=xtensa-esp32 -GNinja -S  . -B /build-output
-WORKDIR /build-output 
-RUN ls
-RUN ninja
+
+ADD  ./entrypoint.sh /etc/entrypoint.sh
+
+ENTRYPOINT ["/bin/bash", "/etc/entrypoint.sh" ]
