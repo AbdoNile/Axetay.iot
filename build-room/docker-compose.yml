@@ -7,4 +7,5 @@ services:
       context: .
       dockerfile: Dockerfile
     volumes: 
-        - ./:/build-output
+        - ../build-output/:/build-output
+        - ../Iot.Application/:/build-room/src

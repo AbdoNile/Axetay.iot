@@ -19,11 +19,12 @@ WORKDIR /esp
 RUN tar -xzf xtensa-esp32-elf-linux64-1.22.0-80-g6c4433a-5.2.0.tar.gz
 ENV PATH="$PATH:$HOME/esp/xtensa-esp32-elf/bin"
 
-RUN git clone https://github.com/aws/amazon-freertos.git /amazon-freertos --recurse-submodules
+RUN git clone https://github.com/aws/amazon-freertos.git /build-room/amazon-freertos --recurse-submodules
 
 RUN pip install --upgrade pip 
-RUN pip install --user -r /amazon-freertos/vendors/espressif/esp-idf/requirements.txt
+RUN pip install --user -r /build-room/amazon-freertos/vendors/espressif/esp-idf/requirements.txt
 
 ADD  ./entrypoint.sh /etc/entrypoint.sh
+ADD  ./dependencies  /build-room/
 
 ENTRYPOINT ["/bin/bash", "/etc/entrypoint.sh" ]
